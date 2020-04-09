@@ -2,6 +2,20 @@ package Test;
 
 import java.util.Date;
 
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import vol.DAO.interfaces.IAeroportDao;
+import vol.DAO.interfaces.IAvionDao;
+import vol.DAO.interfaces.ICompagnieDao;
+import vol.DAO.interfaces.IPaiementDao;
+import vol.DAO.interfaces.IParticulierDao;
+import vol.DAO.interfaces.IPassagerDao;
+import vol.DAO.interfaces.IReservationDao;
+import vol.DAO.interfaces.ISocieteDao;
+import vol.DAO.interfaces.ITrajetDao;
+import vol.DAO.interfaces.IUtilisateurDao;
+import vol.DAO.interfaces.IVilleDao;
+import vol.DAO.interfaces.IVolDao;
 import vol.model.Aeroport;
 import vol.model.Arrivee;
 import vol.model.Avion;
@@ -16,16 +30,28 @@ import vol.model.Trajet;
 import vol.model.Utilisateur;
 import vol.model.Ville;
 import vol.model.Vol;
-import vol.singleton.Application;
 
 public class Test_vide {
 
 	public static void main(String[] args) {
-		testCRUD();
+		creationDonnees();
 
 	}
 
 	public static void creationDonnees() {
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("application-context.xml");
+		IAeroportDao aeroportDao = context.getBean(IAeroportDao.class);
+		IAvionDao avionDao = context.getBean(IAvionDao.class);
+		ICompagnieDao compagnieDao = context.getBean(ICompagnieDao.class);
+		IPaiementDao paiementDao = context.getBean(IPaiementDao.class);
+		IParticulierDao particulierDao = context.getBean(IParticulierDao.class);
+		IPassagerDao passagerDao = context.getBean(IPassagerDao.class);
+		IReservationDao reservationDao = context.getBean(IReservationDao.class);
+		ISocieteDao societeDao = context.getBean(ISocieteDao.class);
+		ITrajetDao trajetDao = context.getBean(ITrajetDao.class);
+		IUtilisateurDao utilisateurDao = context.getBean(IUtilisateurDao.class);
+		IVilleDao villeDao = context.getBean(IVilleDao.class);
+		IVolDao volDao = context.getBean(IVolDao.class);
 
 		Societe sopraSteria = new Societe();
 		sopraSteria.setSiret("1234");
@@ -40,7 +66,7 @@ public class Test_vide {
 		sopraSteria.setComplementAdresse(null);
 		sopraSteria.setPays("France");
 
-		sopraSteria = Application.getInstance().getSocieteDao().save(sopraSteria); // managed
+		sopraSteria = societeDao.save(sopraSteria); // managed
 
 		Particulier moi = new Particulier();
 		moi.setPrenom("Damien");
@@ -55,14 +81,14 @@ public class Test_vide {
 		moi.setPays("France");
 		
 		
-		moi = Application.getInstance().getParticulierDao().save(moi); // managed
+		moi = particulierDao.save(moi); // managed
 
 		Utilisateur user = new Utilisateur();
 		user.setIdentifiant("ddub");
 		user.setMotDePasse("azerty");
 		user.setClient(moi);
 
-		user = Application.getInstance().getUtilisateurDao().save(user);
+		user = utilisateurDao.save(user);
 
 		Passager toi = new Passager();
 		toi.setNom("Ujsdhf");
@@ -76,7 +102,7 @@ public class Test_vide {
 		toi.setHandicap(false);
 		toi.setClient(moi);
 
-		toi = Application.getInstance().getPassagerDao().save(toi); // managed
+		toi = passagerDao.save(toi); // managed
 
 		Reservation res = new Reservation();
 		res.setAnnulee(false);
@@ -86,32 +112,32 @@ public class Test_vide {
 		res.setClient(moi);
 		res.setPassager(toi);
 
-		res = Application.getInstance().getReservationDao().save(res); // managed
+		res = reservationDao.save(res); // managed
 
 		Paiement paiement = new Paiement();
 		paiement.setMontant(54.56f);
 		paiement.setType("CB");
 		paiement.setReservation(res);
 
-		paiement = Application.getInstance().getPaiementDao().save(paiement); // managed
+		paiement = paiementDao.save(paiement); // managed
 
 		res.setPaiement(paiement);
-		res = Application.getInstance().getReservationDao().save(res); // managed
+		res = reservationDao.save(res); // managed
 
 		Ville paris = new Ville();
 		paris.setNom("Paris");
 		paris.setPays("France");
 
-		paris = Application.getInstance().getVilleDao().save(paris);
+		paris = villeDao.save(paris);
 
 		Aeroport roisy = new Aeroport();
 		roisy.setNom("Roisy");
 		roisy.addVille(paris);
 
-		roisy = Application.getInstance().getAeroportDao().save(roisy);
+		roisy = aeroportDao.save(roisy);
 
 		paris.addAeroport(roisy);
-		paris = Application.getInstance().getVilleDao().save(paris);
+		paris = villeDao.save(paris);
 
 		Depart dep = new Depart();
 		dep.setAeroport(roisy);
@@ -124,12 +150,12 @@ public class Test_vide {
 		Avion airbus = new Avion();
 		airbus.setModele("Airbus A 320");
 
-		airbus = Application.getInstance().getAvionDao().save(airbus);
+		airbus = avionDao.save(airbus);
 
 		Compagnie airfrance = new Compagnie();
 		airfrance.setNom("Air France");
 
-		airfrance = Application.getInstance().getCompagnieDao().save(airfrance);
+		airfrance = compagnieDao.save(airfrance);
 
 		Vol vol1 = new Vol();
 		vol1.setNumeroDeVol("65498");
@@ -139,18 +165,21 @@ public class Test_vide {
 		vol1.setAvion(airbus);
 		vol1.setCompagnie(airfrance);
 
-		vol1 = Application.getInstance().getVolDao().save(vol1);
+		vol1 = volDao.save(vol1);
 
 		Trajet traj = new Trajet();
 		traj.setRes(res);
 		res.setTraj(traj);
 
-		traj = Application.getInstance().getTrajetDao().save(traj);
+		traj = trajetDao.save(traj);
 		vol1.addTrajet(traj);
-		vol1 = Application.getInstance().getVolDao().save(vol1);
+		vol1 = volDao.save(vol1);
 	}
 
 	public static void testCRUD() {
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("application-context.xml");
+		ISocieteDao societeDao = context.getBean(ISocieteDao.class);
+
 		Societe sopraSteria = new Societe();
 		sopraSteria.setSiret("1234");
 		sopraSteria.setNumeroDeTva("5454");
@@ -164,16 +193,16 @@ public class Test_vide {
 		sopraSteria.setComplementAdresse(null);
 		sopraSteria.setPays("France");
 
-		sopraSteria = Application.getInstance().getSocieteDao().save(sopraSteria);
+		sopraSteria = societeDao.save(sopraSteria);
 		
-		System.out.println(Application.getInstance().getSocieteDao().find(sopraSteria.getId()));
+		System.out.println(societeDao.find(sopraSteria.getId()));
 
 		sopraSteria.setPays("Allemagne");
-		sopraSteria = Application.getInstance().getSocieteDao().save(sopraSteria);
-		System.out.println(Application.getInstance().getSocieteDao().find(sopraSteria.getId()));
+		sopraSteria = societeDao.save(sopraSteria);
+		System.out.println(societeDao.find(sopraSteria.getId()));
 		
-		System.out.println(Application.getInstance().getSocieteDao().findAll());
-		Application.getInstance().getSocieteDao().delete(sopraSteria);
-		System.out.println(Application.getInstance().getSocieteDao().findAll());
+		System.out.println(societeDao.findAll());
+		societeDao.delete(sopraSteria);
+		System.out.println(societeDao.findAll());
 	}
 }
