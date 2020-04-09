@@ -5,6 +5,21 @@ import java.util.Date;
 
 import java.util.List;
 
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import vol.DAO.interfaces.IAeroportDao;
+import vol.DAO.interfaces.IAvionDao;
+import vol.DAO.interfaces.ICompagnieDao;
+import vol.DAO.interfaces.IPaiementDao;
+import vol.DAO.interfaces.IParticulierDao;
+import vol.DAO.interfaces.IPassagerDao;
+import vol.DAO.interfaces.IReservationDao;
+import vol.DAO.interfaces.ISocieteDao;
+import vol.DAO.interfaces.ITrajetDao;
+import vol.DAO.interfaces.IUtilisateurDao;
+import vol.DAO.interfaces.IVilleDao;
+import vol.DAO.interfaces.IVolDao;
+import vol.DAO.jpa.SocieteDaoJpa;
 import vol.model.Aeroport;
 import vol.model.Arrivee;
 import vol.model.Avion;
@@ -18,12 +33,24 @@ import vol.model.Societe;
 import vol.model.Trajet;
 import vol.model.Ville;
 import vol.model.Vol;
-import vol.singleton.Application;
 
 public class TestAllFunction {
 
 	public static void main(String[] args) {
-	
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("application-context.xml");
+		IAeroportDao aeroportDao = context.getBean(IAeroportDao.class);
+		IAvionDao avionDao = context.getBean(IAvionDao.class);
+		ICompagnieDao compagnieDao = context.getBean(ICompagnieDao.class);
+		IPaiementDao paiementDao = context.getBean(IPaiementDao.class);
+		IParticulierDao particulierDao = context.getBean(IParticulierDao.class);
+		IPassagerDao passagerDao = context.getBean(IPassagerDao.class);
+		IReservationDao reservationDao = context.getBean(IReservationDao.class);
+		ISocieteDao societeDao = context.getBean(ISocieteDao.class);
+		ITrajetDao trajetDao = context.getBean(ITrajetDao.class);
+		IUtilisateurDao utilisateurDao = context.getBean(IUtilisateurDao.class);
+		IVilleDao villeDao = context.getBean(IVilleDao.class);
+		IVolDao volDao = context.getBean(IVolDao.class);
+		
 		
 		Societe sopraSteria = new Societe();
 		sopraSteria.setSiret("1234");
@@ -38,7 +65,7 @@ public class TestAllFunction {
 		sopraSteria.setComplementAdresse(null);
 		sopraSteria.setPays("France");
 		
-		sopraSteria = Application.getInstance().getSocieteDao().save(sopraSteria); // managed
+		sopraSteria = save(sopraSteria); // managed
 		sopraSteria = Application.getInstance().getSocieteDao().find(sopraSteria.getId());
 		System.out.println(sopraSteria);
 		List<Societe> societes = new ArrayList<Societe>();
