@@ -4,183 +4,48 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import vol.DAO.interfaces.IVolDao;
 import vol.model.Vol;
-import vol.singleton.Application;
 
 
 
+@Repository
+@Transactional
 public class VolDaoJpa implements IVolDao {
+	
+	@PersistenceContext
+	private EntityManager em; // entityManagerFactory.createEntityManager()
 
 
 	@Override
-
+	@Transactional(readOnly = true)
 	public List<Vol> findAll() {
-
-		List<Vol> vols = null;
-
-
-		EntityManager em = null;
-
-		EntityTransaction tx = null;
-
-
-		try {
-
-			em = Application.getInstance().getEmf().createEntityManager();
-
-			tx = em.getTransaction();
-
-			tx.begin();
-
-
 			TypedQuery<Vol> query = em.createQuery("from Vol", Vol.class);
-
-
-
-			vols = query.getResultList();
-
-
-			tx.commit();
-
-		} catch (Exception e) {
-
-			if (tx != null && tx.isActive()) {
-
-				tx.rollback();
-
-			}
-
-			e.printStackTrace();
-
-		} finally {
-
-			if (em != null) {
-
-				em.close();
-
-			}
-
-		}
-
-
-		return vols;
+		return query.getResultList();
 
 	}
 
 
 
 	@Override
-
+	@Transactional(readOnly = true)
 	public Vol find(Long id) {
-
-		Vol vol = null;
-
-
-
-		EntityManager em = null;
-
-		EntityTransaction tx = null;
-
-
-
-		try {
-
-			em = Application.getInstance().getEmf().createEntityManager();
-
-			tx = em.getTransaction();
-
-			tx.begin();
-
-
-
-			vol = em.find(Vol.class, id);
-
-
-
-			tx.commit();
-
-		} catch (Exception e) {
-
-			if (tx != null && tx.isActive()) {
-
-				tx.rollback();
-
-			}
-
-			e.printStackTrace();
-
-		} finally {
-
-			if (em != null) {
-
-				em.close();
-
-			}
-
-		}
-
-
-
-		return vol;
+		return  em.find(Vol.class, id);
 
 	}
 
 
 
 	@Override
-
 	public Vol save(Vol obj) {
 
-		Vol vol = null;
-
-
-
-		EntityManager em = null;
-
-		EntityTransaction tx = null;
-
-
-
-		try {
-
-			em = Application.getInstance().getEmf().createEntityManager();
-
-			tx = em.getTransaction();
-
-			tx.begin();
-
-
-
-			vol = em.merge(obj);
-
-
-
-			tx.commit();
-
-		} catch (Exception e) {
-
-			if (tx != null && tx.isActive()) {
-
-				tx.rollback();
-
-			}
-
-			e.printStackTrace();
-
-		} finally {
-
-			if (em != null) {
-
-				em.close();
-
-			}
-
-		}
-
-		return vol;
+	return em.merge(obj);
 
 	}
 
@@ -188,46 +53,11 @@ public class VolDaoJpa implements IVolDao {
 	@Override
 
 	public void delete(Vol obj) {
-
-		EntityManager em = null;
-
-		EntityTransaction tx = null;
-
-
-		try {
-
-			em = Application.getInstance().getEmf().createEntityManager();
-
-			tx = em.getTransaction();
-
-			tx.begin();
-
-
 			em.remove(em.merge(obj));
 
 
 
-			tx.commit();
-
-		} catch (Exception e) {
-
-			if (tx != null && tx.isActive()) {
-
-				tx.rollback();
-
-			}
-
-			e.printStackTrace();
-
-		} finally {
-
-			if (em != null) {
-
-				em.close();
-
-			}
-
-		}
+		
 
 	}
 
