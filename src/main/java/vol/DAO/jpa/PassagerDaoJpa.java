@@ -3,126 +3,43 @@ package vol.DAO.jpa;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import vol.DAO.interfaces.IPassagerDao;
 import vol.model.Passager;
-import vol.singleton.Application;
 
+@Repository
+@Transactional
 public class PassagerDaoJpa implements IPassagerDao {
+
+	@PersistenceContext
+	private EntityManager em;
+
 	@Override
+	@Transactional(readOnly = true)
 	public List<Passager> findAll() {
-		List<Passager> passagers = null;
-
-		EntityManager em = null;
-		EntityTransaction tx = null;
-
-		try {
-			em = Application.getInstance().getEmf().createEntityManager();
-			tx = em.getTransaction();
-			tx.begin();
-
-			TypedQuery<Passager> query = em.createQuery("from Passager", Passager.class);
-
-			passagers = query.getResultList();
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null && tx.isActive()) {
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-		}
-
-		return passagers;
+		TypedQuery<Passager> query = em.createQuery("from Passager", Passager.class);
+		return query.getResultList();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Passager find(Long id) {
-		Passager passager = null;
-
-		EntityManager em = null;
-		EntityTransaction tx = null;
-
-		try {
-			em = Application.getInstance().getEmf().createEntityManager();
-			tx = em.getTransaction();
-			tx.begin();
-
-			passager = em.find(Passager.class, id);
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null && tx.isActive()) {
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-		}
-
-		return passager;
+		return em.find(Passager.class, id);
 	}
 
 	@Override
 	public Passager save(Passager obj) {
-		Passager passager = null;
-
-		EntityManager em = null;
-		EntityTransaction tx = null;
-
-		try {
-			em = Application.getInstance().getEmf().createEntityManager();
-			tx = em.getTransaction();
-			tx.begin();
-
-			passager = em.merge(obj);
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null && tx.isActive()) {
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-		}
-
-		return passager;
+		return em.merge(obj);
 	}
 
 	@Override
 	public void delete(Passager obj) {
-		EntityManager em = null;
-		EntityTransaction tx = null;
-
-		try {
-			em = Application.getInstance().getEmf().createEntityManager();
-			tx = em.getTransaction();
-			tx.begin();
-
-			em.remove(em.merge(obj));
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null && tx.isActive()) {
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-		}
+		em.remove(em.merge(obj));
 	}
 
 }

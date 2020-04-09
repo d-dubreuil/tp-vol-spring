@@ -3,126 +3,43 @@ package vol.DAO.jpa;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import vol.DAO.interfaces.IPaiementDao;
 import vol.model.Paiement;
-import vol.singleton.Application;
 
-public class PaiementDaoJpa implements IPaiementDao{
+@Repository
+@Transactional
+public class PaiementDaoJpa implements IPaiementDao {
+
+	@PersistenceContext
+	private EntityManager em;
+
 	@Override
+	@Transactional(readOnly = true)
 	public List<Paiement> findAll() {
-		List<Paiement> paiements = null;
-
-		EntityManager em = null;
-		EntityTransaction tx = null;
-
-		try {
-			em = Application.getInstance().getEmf().createEntityManager();
-			tx = em.getTransaction();
-			tx.begin();
-
-			TypedQuery<Paiement> query = em.createQuery("from Paiement", Paiement.class);
-
-			paiements = query.getResultList();
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null && tx.isActive()) {
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-		}
-
-		return paiements;
+		TypedQuery<Paiement> query = em.createQuery("from Paiement", Paiement.class);
+		return query.getResultList();
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public Paiement find(Long id) {
-		Paiement paiement = null;
-
-		EntityManager em = null;
-		EntityTransaction tx = null;
-
-		try {
-			em = Application.getInstance().getEmf().createEntityManager();
-			tx = em.getTransaction();
-			tx.begin();
-
-			paiement = em.find(Paiement.class, id);
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null && tx.isActive()) {
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-		}
-
-		return paiement;
+		return em.find(Paiement.class, id);
 	}
 
 	@Override
 	public Paiement save(Paiement obj) {
-		Paiement paiement = null;
-
-		EntityManager em = null;
-		EntityTransaction tx = null;
-
-		try {
-			em = Application.getInstance().getEmf().createEntityManager();
-			tx = em.getTransaction();
-			tx.begin();
-
-			paiement = em.merge(obj);
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null && tx.isActive()) {
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-		}
-
-		return paiement;
+		return em.merge(obj);
 	}
 
 	@Override
 	public void delete(Paiement obj) {
-		EntityManager em = null;
-		EntityTransaction tx = null;
-
-		try {
-			em = Application.getInstance().getEmf().createEntityManager();
-			tx = em.getTransaction();
-			tx.begin();
-
-			em.remove(em.merge(obj));
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null && tx.isActive()) {
-				tx.rollback();
-			}
-			e.printStackTrace();
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-		}
+		em.remove(em.merge(obj));
 	}
 
 }
